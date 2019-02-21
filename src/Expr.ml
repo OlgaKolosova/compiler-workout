@@ -59,6 +59,7 @@ let operator op_operator left right = match op_operator with
 |"!=" -> bool2int(left != right) 
 |"&&" -> bool2int((int2bool left) && (int2bool right))
 |"!!" -> bool2int((int2bool left) || (int2bool right))
+
 (* Expression evaluator
 
      val eval : state -> expr -> int
