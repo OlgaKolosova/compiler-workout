@@ -36,13 +36,29 @@ let update x v s = fun y -> if x = y then v else s y
 let s = update "x" 1 @@ update "y" 2 @@ update "z" 3 @@ update "t" 4 empty
 
 (* Some testing; comment this definition out when submitting the solution. *)
-let _ =
+(* let _ =
   List.iter
     (fun x ->
        try  Printf.printf "%s=%d\n" x @@ s x
        with Failure s -> Printf.printf "%s\n" s
     ) ["x"; "a"; "y"; "z"; "t"; "b"]
-
+    *)
+let int2bool i=i!=0;;
+let bool2int b=if b then 1 else 0;;
+let operator op_operator left right = match op_operator with
+|"+" -> left + right
+|"-" -> left - right
+|"*" -> left ^ right
+|"/" -> left / right
+|"%" -> left mod right
+|"<" -> bool2int(left < right) 
+|">" -> bool2int(left > right) 
+|"<=" -> bool2int(left <= right) 
+|">=" -> bool2int(left >= right) 
+|"==" -> bool2int(left = right) 
+|"!=" -> bool2int(left != right) 
+|"&&" -> bool2int((int2bool left) && (int2bool right))
+|"!!" -> bool2int((int2bool left) || (int2bool right))
 (* Expression evaluator
 
      val eval : state -> expr -> int
@@ -51,4 +67,8 @@ let _ =
    the given state.
 *)
 let eval = failwith "Not implemented yet"
+let rec eval state expr = match expr with
+|Const const -> const
+|Var vr -> state vr
+|Binop(e_op,x,y) ->binop_e e_op(eval state x) (eval state y)
                     
