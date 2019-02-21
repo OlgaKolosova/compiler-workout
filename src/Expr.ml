@@ -67,7 +67,7 @@ let operator op_operator left right = match op_operator with
    Takes a state and an expression, and returns the value of the expression in 
    the given state.
 *)
-let eval = failwith "Not implemented yet"
+(* let eval = failwith "Not implemented yet" *)
                     
 let rec eval state expr = match expr with
 |Const const -> const
