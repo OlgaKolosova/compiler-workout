@@ -47,7 +47,7 @@ let int2bool i=i !=0
 let bool2int b=if b then 1 else 0
 
 let operator op_operator left right = match op_operator with
-|"+" -> left + right
+| "+" -> left + right
 |"-" -> left - right
 |"*" -> left ^ right
 |"/" -> left / right
