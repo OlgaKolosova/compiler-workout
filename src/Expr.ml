@@ -58,7 +58,7 @@ let operator op_operator left right = match op_operator with
 |"==" -> bool2int(left = right) 
 |"!=" -> bool2int(left != right) 
 |"&&" -> bool2int((int2bool left) && (int2bool right))
-|"!!" -> bool2int((int2bool left) || (int2bool right))
+|"!!" -> bool2int((int2bool left) || (int2bool right));;
 
 (* Expression evaluator
 
@@ -72,4 +72,4 @@ let operator op_operator left right = match op_operator with
 let rec eval state expr = match expr with
 |Const const -> const
 |Var vr -> state vr
-|Binop(e_op,x,y) ->binop_e e_op(eval state x) (eval state y);;
+|Binop(e_op,left,right) -> (operator e_op) (eval state left) (eval state right);;
