@@ -43,23 +43,23 @@ let s = update "x" 1 @@ update "y" 2 @@ update "z" 3 @@ update "t" 4 empty
        with Failure s -> Printf.printf "%s\n" s
     ) ["x"; "a"; "y"; "z"; "t"; "b"]
 *)
-let int2bool i=i !=0
-let bool2int b=if b then 1 else 0
+let int2bool i = i != 0
+let bool2int b = if b then 1 else 0
 
-let operator op_operator left right = match op_operator with
-| "+" -> left + right
-|"-" -> left - right
-|"*" -> left ^ right
-|"/" -> left / right
-|"%" -> left mod right
-|"<" -> bool2int(left < right) 
-|">" -> bool2int(left > right) 
-|"<=" -> bool2int(left <= right) 
-|">=" -> bool2int(left >= right) 
-|"==" -> bool2int(left = right) 
-|"!=" -> bool2int(left != right) 
-|"&&" -> bool2int((int2bool left) && (int2bool right))
-|"!!" -> bool2int((int2bool left) || (int2bool right));;
+    let operator op_operator left right = match op_operator with
+        | "+" -> left + right
+        | "-" -> left - right
+        | "*" -> left * right
+        | "/" -> left / right
+        | "%" -> left mod right
+        | "<" -> bool2int(left < right)
+        | ">" -> bool2int(left > right)
+        | "<=" -> bool2int(left <= right)
+        | ">=" -> bool2int(left >= right)
+        | "==" -> bool2int(left = right)
+        | "!=" -> bool2int(left != right)
+        | "&&" -> bool2int((int2bool left) && (int2bool right))
+        | "!!" -> bool2int((int2bool left) || (int2bool right))
 
 (* Expression evaluator
 
