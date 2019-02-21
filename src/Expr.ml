@@ -72,4 +72,4 @@ let operator op_operator left right = match op_operator with
 let rec eval state expr = match expr with
 |Const const -> const
 |Var vr -> state vr
-|Binop(e_op,left,right) -> (operator e_op) (eval state left) (eval state right);;
+|Binop(op_operator,left,right) -> (operator op_operator) (eval state left) (eval state right);;
