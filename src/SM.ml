@@ -25,7 +25,7 @@ type config = int list * Syntax.Stmt.config
  *)                         
 (* let eval _ = failwith "Not yet implemented" *)
 let rec eval cfg prg = 
-let (st, pr) =config in
+let (st, pr) =cfg in
 let (s,i,o) = pr in
 match prg with
 		| BINOP op -> (Syntax.Expr.operator op (List.hd (List.tl st)) (List.hd st) :: (List.tl (List.tl st)), pr)
