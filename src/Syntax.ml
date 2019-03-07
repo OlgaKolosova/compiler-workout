@@ -92,9 +92,9 @@ module Stmt =
    (* let eval _ = failwith "Not implemented yet" *)
 let rec eval (s,i,o) sta=match sta with
 |Read a-> (Expr.update a (List.hd i) s, List.tl i,o)
-|Write b-> (s,i,o @[Expr.eval s b])
+|Write b-> (s,i,o @ [Expr.eval s b])
 |Assign (a,b) -> (Expr.update a (Expr.eval s b) s, i, o)
-|Seq (l,r) -> eval (eval (s,i,o) l) r
+|Seq (l,r) -> eval (eval (s,i,o) l)r;;
                                                          
   end
 
