@@ -36,6 +36,7 @@ let step (st,(s,i,o))p = match p with
 |[] -> cfg
 |p::ps -> eval (step cfg p) ps
 
+let eval cfg prg = List.fold_left eval cfg prg
 
 (* Top-level evaluation
 
@@ -54,11 +55,14 @@ let run i p = let (_, (_, _, o)) = eval ([], (Syntax.Expr.empty, i, [])) p in o
  *)
 
 (* let compile _ = failwith "Not yet implemented" *)
-let rec compile sta =
-let rec compile_expr expr = match expr with 
-|Syntax.Expr.Const n -> [CONST n]
-|Syntax.Expr.Var x-> [LD x]
-|Syntax.Expr.Binop (op, left, right) -> compile_expr left @ compile_expr right @[BINOP op] in match sta with
-|Syntax.Stmt.Write expr -> (compile_expr expr) @ [WRITE]
-|Syntax.Stmt.Assign (x,e) -> (compile_expr e)@[ST x]
-|Syntax.Stmt.Seq (l,r) -> (compile l)@(compile r);;
+
+let rec compile_expr exp = match exp with
+		| Syntax.Expr.Const n -> [CONST n]
+		| Syntax.Expr.Var x -> [LD x]
+		| Syntax.Expr.Binop (op, left, right) -> (compile_expr left)@(compile_expr right)@[BINOP op]
+
+let rec compile sta = match sta with
+		| Syntax.Stmt.Read a -> [READ; ST a]
+		| Syntax.Stmt.Write expr -> (compile_expr expr) @ [WRITE]
+		| Syntax.Stmt.Assign (x, e)   -> (compile_expr e) @ [ST x]
+		| Syntax.Stmt.Seq (l, r) -> (compile l) @ (compile r);;
