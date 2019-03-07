@@ -37,12 +37,3 @@ let x = !"x"
 let y = !"y"
 let z = !"z"
 let t = !"t"
-
-<<<<<<< HEAD
-(* Voila; comment this out before submitting the solution *)
-(* let _ =
-  List.iter (fun e -> Printf.printf "eval s (%s) = %d\n" (show(expr) e) (eval s e)) [x+y*z- !?3; t-z+y && x]
-*)
-=======
->>>>>>> upstream/hw2
-                   
