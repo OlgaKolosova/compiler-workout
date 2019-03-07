@@ -70,7 +70,7 @@ let rec eval state expr = match expr with
 |Var vr -> state vr
 |Binop(op_operator,left,right) -> (operator op_operator) (eval state left) (eval state right);;
 
-let b_parse op_operator =ostap(-$(op_operator)),(fun x y ->Binop (op_operator,x,y))
+let b_parse op_operator =ostap(- $(op_operator)),(fun x y ->Binop (op_operator,x,y))
 
 
     (* Expression parser. You can use the following terminals:
