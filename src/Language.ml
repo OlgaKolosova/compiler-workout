@@ -70,7 +70,7 @@ let rec eval state expr = match expr with
 |Var vr -> state vr
 |Binop(op_operator,left,right) -> (operator op_operator) (eval state left) (eval state right);;
 
-let b_parse op =ostap(-$(op)),(fun le ri ->Binop (op,le,ri))
+let b_parse op_operator =ostap(-$(op_operator)),(fun x y ->Binop (op_operator,x,y))
 
 
     (* Expression parser. You can use the following terminals:
@@ -84,8 +84,7 @@ let b_parse op =ostap(-$(op)),(fun le ri ->Binop (op,le,ri))
 expr:
 !(Ostap.Util.expr
 (fun x->x)
-(Array.map
-(fun (aso,ops) ->aso, List.map b_parse ops)
+(Array.map(fun (aso,ops) ->aso, List.map b_parse ops)
 [|
 `Lefta, ["!!"];
 `Lefta, ["&&"];
@@ -138,7 +137,7 @@ b_l:
 "read" "(" x:IDENT ")" {Read x}
 | "write" "(" w:!(Expr.expr) ")" {Write w}
 |x:IDENT ":=" w:!(Expr.expr) {Assign (x,w)}
-parse: x:b_l ";" xs:parse {Seq (x,xs)} | statement
+parse: x:b_l ";" xs:parse {Seq (x,xs)} | b_l
     )
       
   end
