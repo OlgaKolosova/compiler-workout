@@ -25,18 +25,17 @@ type config = int list * Syntax.Stmt.config
  *)                         
 (* let eval _ = failwith "Not yet implemented" *)
 let rec eval cfg prg = 
-let step (st,(s,i,o))p = match p with
-| BINOP op ->(Syntax.Expr.operator op (List.hd(List.tl st)) (List.hd st) :: (List.tl (List.tl st)), (s,i,o))
-|CONST n ->(n::st, (s,i,o))
-|READ -> (List.hd i:: st, (s,List.tl i,o))
-|WRITE -> (List.tl st, (s,i,o @ [List.hd st]))
-|LD x ->(s x :: st, (s,i,o))
-|ST x -> (List.tl st, (Syntax.Expr.update x (List.hd st) s,i,o))
- in match prg with
-|[] -> cfg
-|p::ps -> eval (step cfg p) ps
-
-let eval cfg prg = List.fold_left eval cfg prg
+let (st, pr) =config in
+let (s,i,o) = pr in
+match prg with
+		| BINOP op -> (Syntax.Expr.operator op (List.hd (List.tl st)) (List.hd st) :: (List.tl (List.tl st)), pr)
+		| CONST n -> (n :: st, pr)
+		| READ -> (List.hd i :: st, (s, List.tl i, o))
+		| WRITE -> (List.tl st, (s, i, o @ [List.hd st]))
+		| LD x -> (s x :: st, pr)
+		| ST x -> (List.tl st, (Syntax.Expr.update x (List.hd st) s, i, o))
+		
+		let eval cfg prg = List.fold_left eval cfg prg
 
 (* Top-level evaluation
 
