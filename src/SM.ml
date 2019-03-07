@@ -28,12 +28,12 @@ let rec eval cfg prg =
 let (st, pr) =cfg in
 let (s,i,o) = pr in
 match prg with
-		| BINOP op -> (Syntax.Expr.operator op (List.hd (List.tl st)) (List.hd st) :: (List.tl (List.tl st)), pr)
+		| BINOP op -> (Language.Expr.operator op (List.hd (List.tl st)) (List.hd st) :: (List.tl (List.tl st)), pr)
 		| CONST n -> (n :: st, pr)
 		| READ -> (List.hd i :: st, (s, List.tl i, o))
 		| WRITE -> (List.tl st, (s, i, o @ [List.hd st]))
 		| LD x -> (s x :: st, pr)
-		| ST x -> (List.tl st, (Syntax.Expr.update x (List.hd st) s, i, o))
+		| ST x -> (List.tl st, (Language.Expr.update x (List.hd st) s, i, o))
 		
 let eval cfg prg = List.fold_left eval cfg prg
 
@@ -54,12 +54,12 @@ let run p i = let (_, (_, _, o)) = eval ([], (Language.Expr.empty, i, [])) p in 
  *)
 (* let compile _ = failwith "Not yet implemented" *)
 let rec compile_expr exp = match exp with
-		| Syntax.Expr.Const n -> [CONST n]
-		| Syntax.Expr.Var x -> [LD x]
-		| Syntax.Expr.Binop (op, left, right) -> (compile_expr left)@(compile_expr right)@[BINOP op]
+		| Language.Expr.Const n -> [CONST n]
+		| Language.Expr.Var x -> [LD x]
+		| Language.Expr.Binop (op, left, right) -> (compile_expr left)@(compile_expr right)@[BINOP op]
 
 let rec compile sta = match sta with
-		| Syntax.Stmt.Read a -> [READ; ST a]
-		| Syntax.Stmt.Write expr -> (compile_expr expr) @ [WRITE]
-		| Syntax.Stmt.Assign (x, e)   -> (compile_expr e) @ [ST x]
-                | Syntax.Stmt.Seq (l, r) -> (compile l) @ (compile r);;
+		| Language.Stmt.Read a -> [READ; ST a]
+		| Language.Stmt.Write expr -> (compile_expr expr) @ [WRITE]
+		| Language.Stmt.Assign (x, e)   -> (compile_expr e) @ [ST x]
+                | Language.Stmt.Seq (l, r) -> (compile l) @ (compile r);;
