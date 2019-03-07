@@ -90,7 +90,7 @@ expr:
 `Lefta, ["&&"];
 `Nona, ["<=";"<";">=";">";"=";"!="];
 `Lefta, ["+";"-"];
-`Lefta. ["*";"/";"%"];
+`Lefta, ["*";"/";"%"];
 |])
 b_t);
 b_t:
@@ -136,7 +136,8 @@ let rec eval (s,i,o) sta=match sta with
 b_l:
 "read" "(" x:IDENT ")" {Read x}
 | "write" "(" w:!(Expr.expr) ")" {Write w}
-|x:IDENT ":=" w:!(Expr.expr) {Assign (x,w)}
+|x:IDENT ":=" w:!(Expr.expr) {Assign (x,w)};
+
 parse: x:b_l ";" xs:parse {Seq (x,xs)} | b_l
     )
       
