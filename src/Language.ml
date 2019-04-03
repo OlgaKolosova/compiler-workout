@@ -150,14 +150,57 @@ module Stmt =
 
        which returns a list of formal parameters and a body for given definition
     *)
-    let rec eval _ = failwith "Not Implemented Yet"
+let to_bool b = b <> 0
+
+let rec eval env (st, input, output) op =
+		match op with
+| Read var	-> (State.update var (List.hd input) st, List.tl input, output)
+| Write expr    -> (st, input, output @ [Expr.eval st expr])
+| Assign (var, expr) -> (State.update var (Expr.eval st expr) st, input, output)
+| Seq (t1, t2)       -> eval env (eval env (st, input, output) t1) t2
+| Skip          -> (st, input, output)
+| If (expr, thenStmt, elseStmt) -> if (Expr.eval st expr) != 0 then eval env (st, input, output) thenStmt else eval env (st, input, output) elseStmt
+| While (expr, wStmt) -> if to_bool (Expr.eval st expr) then eval env (eval env (st, input, output) wStmt) op else (st, input, output)
+| Repeat (ruStmt, expr)   -> let (st, input, output) = eval env (st, input, output) ruStmt in
+let r = Expr.eval st expr in
+if r != 0 then (st, input, output) else eval env (st, input, output) op
+| Call (name, args) ->
+let (arg_names, locals, body) = env#definition name in
+let args = List.combine arg_names (List.map (Expr.eval st) args) in 
+let state = State.push_scope st (arg_names @ locals) in
+let fun_args = List.fold_left (fun st (name, value) -> State.update name value st)  state args in
+let (newS, input, output) = eval env (fun_args, input, output) body in
+(State.drop_scope newS st, input, output)
                                 
     (* Statement parser *)
-    ostap (                                      
-      parse: empty {failwith "Not yet implemented"}
+ostap (
+      simple:
+	"read" "(" x:IDENT ")"         {Read x}
+        | "write" "(" e:!(Expr.parse) ")" {Write e}
+        | x:IDENT ":=" e:!(Expr.parse)    {Assign (x, e)}
+        | "if" expr:!(Expr.parse) "then" thenStmt:parse "else" elseStmt:parse "fi" {If (expr, thenStmt, elseStmt)}
+	| "if" expr:!(Expr.parse) "then" thenStmt:parse "fi" {If (expr, thenStmt, Skip)}
+	| "if" expr:!(Expr.parse) "then" thenStmt:parse elseStmt:elif {If (expr, thenStmt, elseStmt)}
+	| "skip" {Skip}
+	| "while" expr:!(Expr.parse) "do" wStmt:parse "od" {While (expr, wStmt)}
+	| "repeat" ruStmt:parse "until" expr:!(Expr.parse) {Repeat (ruStmt, expr)}
+	| "for"  initStmt:parse "," whileCond:!(Expr.parse) "," forStmt:parse
+        "do" body:parse "od" {Seq (initStmt, While (whileCond, Seq (body, forStmt)))}
+        | name:IDENT "(" args:!(Expr.parse)* ")"    {Call (name, args)};
+
+      parse:
+        l:simple ";" rest:parse {Seq (l, rest)}
+        | simple;
+
+      elif:
+	"elif" e1:!(Expr.parse) "then" e2:parse "else" e3:parse "fi" {If (e1, e2, e3)}
+	| "elif" e1:!(Expr.parse) "then" e2:parse "fi" {If (e1, e2, Skip)}
+	| "elif" e1:!(Expr.parse) "then" e2:parse e3:elif {If (e1, e2, e3)}
+
     )
       
   end
+
 
 (* Function and procedure definitions *)
 module Definition =
@@ -167,7 +210,13 @@ module Definition =
     type t = string * (string list * string list * Stmt.t)
 
     ostap (                                      
-      parse: empty {failwith "Not yet implemented"}
+      parse: "fun" name:IDENT "(" args:(IDENT)* ")" local:(%"local" (IDENT)*)? "{" body:!(Stmt.parse) "}"
+{
+let local = match local with
+| Some x -> x
+| _ -> [] in
+name, (args, local, body)
+} 
     )
 
   end
